@@ -1,0 +1,16 @@
+.boton_cuenta {
+    background-color: rgb(239, 113, 44);
+    color: white;
+}
+
+.boton-interactivo:hover {
+    background-color: #e9ecef !important; 
+    transition: 0.2s ease-in-out; 
+}
+
+/* 2. Efecto FOCUS: Aparece un borde cuando le haces clic */
+.boton-interactivo:focus {
+    border: 2px solid rgb(239, 113, 44) !important;
+    box-shadow: none !important;
+    background-color: #fff !important;
+}
