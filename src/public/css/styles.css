@@ -8,9 +8,20 @@
     transition: 0.2s ease-in-out; 
 }
 
-/* 2. Efecto FOCUS: Aparece un borde cuando le haces clic */
+
 .boton-interactivo:focus {
     border: 2px solid rgb(239, 113, 44) !important;
     box-shadow: none !important;
     background-color: #fff !important;
+}
+
+.recuadro-pago {
+    color:  #0a4775cf;
+
+}
+
+.boton-pago:focus {
+    border: 2px solid rgba(31, 59, 124, 0.494) !important;
+    box-shadow: none !important;
+    background-color: #7db5f5 !important;
 }
