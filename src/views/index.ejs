@@ -24,14 +24,17 @@
                 </div>
 
                 <% /* 2. BARRA DE BÚSQUEDA */ %>
-                <div class="flex-grow-1" style="max-width: 650px;">
-                    <div class="input-group">
+                <form action="/" method="GET" class="search-form flex-grow-1" style="max-width: 650px;">
+                    <div class="input-group position-relative">
                         <span class="input-group-text bg-light border-end-0 text-secondary ps-2 ps-md-3 py-1 py-md-2">
                             <i class="bi bi-search" style="font-size: 0.9rem;"></i>
                         </span>
-                        <input type="text" class="form-control bg-light border-start-0 text-secondary shadow-none py-1 py-md-2" style="font-size: 0.85rem;" placeholder="Buscar productos...">
+                        <input type="text" id="searchInput" name="busqueda" class="form-control bg-light border-start-0 text-secondary shadow-none py-1 py-md-2" style="font-size: 0.85rem; padding-right: 2rem;" placeholder="Buscar productos..." value="<%= busquedaActual %>">
+                        <button type="button" id="clearSearchBtn" class="position-absolute top-50 end-0 translate-middle-y me-2 p-0 border-0 bg-transparent d-flex align-items-center justify-content-center <%= busquedaActual ? '' : 'd-none' %>" aria-label="Limpiar búsqueda" style="width: 20px; height: 20px;">
+                            <i class="bi bi-x-circle-fill text-secondary" style="font-size: 1rem;"></i>
+                        </button>
                     </div>
-                </div>
+                </form>
 
                 <% /* 3. BOTONES DERECHOS */ %>
                 <div class="d-flex justify-content-center flex-shrink-0">
@@ -41,7 +44,7 @@
                         <strong class="fs-6">Mi cuenta</strong>
                     </button>
 
-                    <button type="button" class="btn btn-primary rounded-circle d-flex d-md-none align-items-center justify-content-center shadow-sm position-relative" style="width: 38px; height: 38px; background: #1777c0; border: none;">
+                    <button type="button" id="mobileCartBtn" class="btn btn-primary rounded-circle d-flex d-md-none align-items-center justify-content-center shadow-sm position-relative" style="width: 38px; height: 38px; background: #1777c0; border: none;">
                         <i class="bi bi-cart3 text-white" style="font-size: 1.1rem;"></i>
                         <span class="position-absolute top-0 start-100 translate-middle bg-danger border border-light rounded-circle" style="width: 12px; height: 12px; padding: 0;">
                             <span class="visually-hidden">Nuevos ítems</span>
@@ -71,15 +74,16 @@
                         <i class="bi bi-chevron-down ms-2 text-muted" style="font-size: 0.8rem;"></i>
                     </button>
 
+
+
                     <ul class="dropdown-menu shadow-lg border-light-subtle mt-2 py-2" style="min-width: 280px; border-radius: 12px;">
+                        <% categories.forEach(cat => { %>
+                        <a href = "?categoria=<%= cat.Id_categoria %>" class=" btn dropdown-item py-2 fw-medium text-secondary" type="button"><%= cat.nombre %></a>
+                        <% }) %>
                         
-                        <li><button class="dropdown-item py-2 fw-medium text-secondary" type="button">Farmacia</button></li>
-                        <li><button class="dropdown-item py-2 fw-medium text-secondary" type="button">Higiene personal</button></li>
-                        <li><button class="dropdown-item py-2 fw-medium text-secondary" type="button">Limpieza</button></li>
-                        <li><button class="dropdown-item py-2 fw-medium text-secondary" type="button">Abarrotes</button></li>
                         
                         <li><hr class="dropdown-divider"></li>
-                        <li><button class="dropdown-item py-2 fw-medium text-secondary" type="button">Ver todos los departamentos</button></li>
+                        <a href = "/" class="dropdown-item py-2 fw-medium text-secondary" type="button">Ver todos los departamentos</a>
                         
                     </ul>
                 </div>
@@ -87,8 +91,10 @@
                 <% /* Catálogo de Productos */ %>
                 <div class="mt-4">
                     <div class="row row-cols-2 row-cols-md-2 row-cols-lg-4 g-2 g-md-3">
-                        
-                        <% productos.forEach(prod => { %>
+                        <% if (products.length === 0) { %>
+                            <p class="no-results">No se encontraron productos para "<%= busquedaActual %>"</p>
+                        <% } else { %>
+                        <% products.forEach(prod => { %>
                             <div class="col">
                                 <div class="card h-100 border-light-subtle rounded-4 shadow-sm p-2 p-md-3 position-relative d-flex flex-column justify-content-between">
                                     <div class="d-flex justify-content-center align-items-center bg-light rounded-3 p-2 mb-2 mb-md-3" style="height: 140px;">
@@ -112,11 +118,11 @@
                                     </div>
                                 </div>
                             </div>
+                            <% }) %>
+                        <% } %>
 
-                        <% }) %>
 
-                       
-                     
+
 
                     </div>
                 </div>
@@ -163,6 +169,51 @@
         </div>
     </main>
 
+    <% /* ==================== PANTALLA DE PEDIDO (MÓVIL) ==================== */ %>
+    <div id="mobileOrderScreen" class="d-none d-md-none position-fixed top-0 start-0 w-100 h-100 bg-light" style="z-index: 1050; overflow-y: auto;">
+
+        <div class="d-flex align-items-center gap-3 p-3 border-bottom bg-white shadow-sm">
+            <button type="button" id="closeMobileOrderBtn" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                <i class="bi bi-arrow-left fs-5"></i>
+            </button>
+            <h5 class="mb-0 fw-bold">Tu pedido</h5>
+        </div>
+
+        <div class="p-3">
+
+            <div class="card p-4 mb-3 rounded-4 shadow-lg d-flex flex-column" style="background: #fdead8b4; border: 1px solid #c95a0b93;">
+                <div class="d-flex align-items-center gap-2 pb-3 mb-3 w-100" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="16" fill="currentColor" class="bi bi-cart3" viewBox="0 0 16 16">
+                        <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l.84 4.479 9.144-.459L13.89 4zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                    </svg>
+                    <h5 class="mb-0">Pedido</h5>
+                </div>
+
+                <div class="d-flex flex-column w-100 align-items-center text-center py-2">
+                    <span class="text-body-tertiary fw-medium">Tu pedido está vacío</span>
+                    <small class="text-body-tertiary">Agrega productos del catálogo</small>
+                </div>
+            </div>
+
+            <div class="card p-3 p-md-4 mb-3 rounded-4 shadow-sm recuadro-pago" style="background: #94cce9a7; border: 1px solid #0b77c993;">
+                <div class="d-flex align-items-start gap-2">
+                    <i class="bi bi-shop-window fs-5 text-primary"></i>
+                    <small class="text-dark">
+                        Pago en tienda al momento de recoger tu pedido. Aceptamos efectivo y tarjeta.
+                    </small>
+                </div>
+            </div>
+
+            <div class="d-grid">
+                <button class="btn btn-primary btn-lg rounded-pill fw-bold py-2 shadow-sm text-white" style="background: #1777c0; border: none;">
+                    Hacer Pedido
+                </button>
+            </div>
+
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

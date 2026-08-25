@@ -41,6 +41,24 @@ async function getAllProducts() {
   
 };
 
+async function filterByCategory(idCategoria){
+    const allProducts = await getAllProducts();
+    return allProducts.filter(prod => prod.id_categoria === Number(idCategoria))
+
+}
+
+async function buscarProductos(query){
+    const allProducts = await getAllProducts();
+    const termino = query.toLowerCase().trim();
+    return allProducts.filter(prod =>
+        prod.nombre.toLowerCase().includes(termino) ||
+        prod.marca.toLowerCase().includes(termino) ||
+        prod.codigo.toLowerCase().includes(termino)
+    );
+}
+
 module.exports = {
-    getAllProducts 
+    getAllProducts,
+    filterByCategory,
+    buscarProductos
 }
